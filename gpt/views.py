@@ -12,7 +12,7 @@ openai.api_key = os.getenv('OPENAI_API_KEY')
 class ChatView(APIView):
     def get(self, request, *args, **kwargs):
         conversations = request.session.get('conversations', [])
-        return Response(request, 'chat.html', {'conversations': conversations})
+        return Response({'conversations': conversations}, status=200)
 
     def post(self, request, *args, **kwargs):
         prompt = request.POST.get('prompt')
