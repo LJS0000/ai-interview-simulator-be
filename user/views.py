@@ -1,10 +1,10 @@
-from django.contrib.auth import authenticate, login, logout
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework.authentication import SessionAuthentication, TokenAuthentication
+from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated, AllowAny
-from .serializers import UserSerializer
+from rest_framework.authtoken.models import Token
+from .serializers import UserSerializer, CustomAuthTokenSerializer
 from .models import User
 from django.core.exceptions import ValidationError
 from django.contrib.auth.password_validation import validate_password
@@ -13,7 +13,7 @@ from django.contrib.auth.password_validation import validate_password
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    authentication_classes = [SessionAuthentication, TokenAuthentication]
+    authentication_classes = [TokenAuthentication]
     # 각각의 메소드에 대해 권한을 지정
     permission_classes_by_action = {
         'create': [AllowAny],
@@ -47,22 +47,24 @@ class UserViewSet(viewsets.ModelViewSet):
             )
 
         # 사용자를 검증
-        user = authenticate(email=email, password=password)
+        serializer = CustomAuthTokenSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.validated_data['user']
+        token, created = Token.objects.get_or_create(user=user)
 
-        if user is not None:
-            login(request, user)
-            return Response(UserSerializer(user).data)
+        # 로그인 실패 시 에러 반환
+        if not token:
+            return Response(
+                {"error": "이메일과 비밀번호를 확인해주세요."},
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
 
-        # 로그인 실패 시 HTTP 401 UNAUTHORIZED 상태 코드 반환
-        return Response(
-            {"error": "이메일과 비밀번호를 확인해주세요."},
-            status=status.HTTP_401_UNAUTHORIZED,
-        )
+        return Response({'token': token.key})
 
     @action(detail=False, methods=['post'])
     def logout(self, request):
-        logout(request)
-        return Response({"message": "성공적으로 로그아웃되었습니다."})
+        request.auth.delete()
+        return Response({"message": "성공적으로 로그아웃되었습니다."}, status=status.HTTP_200_OK)
 
     def create(self, request, *args, **kwargs):
         email = request.data.get('email')
