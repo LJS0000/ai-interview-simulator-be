@@ -21,16 +21,19 @@ class LoginView(APIView):
     def post(self, request):
         email = request.data.get('email')
         password = request.data.get('password')
+
         if email is None or password is None:
             return Response(
                 {"error": "Please provide both email and password"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
+
         user = authenticate(email=email, password=password)
 
         if user is not None:
             login(request, user)
             return Response(UserSerializer(user).data)
+
         return Response(
             {"error": "Invalid login credentials"}, status=status.HTTP_400_BAD_REQUEST
         )
