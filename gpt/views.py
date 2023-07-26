@@ -1,5 +1,5 @@
-from django.shortcuts import render
-from django.views import View
+from rest_framework.views import APIView
+from rest_framework.response import Response
 from dotenv import load_dotenv
 import openai
 import os
@@ -9,10 +9,10 @@ load_dotenv()
 openai.api_key = os.getenv('OPENAI_API_KEY')
 
 
-class ChatView(View):
+class ChatView(APIView):
     def get(self, request, *args, **kwargs):
         conversations = request.session.get('conversations', [])
-        return render(request, 'chat.html', {'conversations': conversations})
+        return Response(request, 'chat.html', {'conversations': conversations})
 
     def post(self, request, *args, **kwargs):
         prompt = request.POST.get('prompt')
