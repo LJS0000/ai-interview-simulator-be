@@ -33,6 +33,8 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     # DRF
     "rest_framework",
+    # DRF token
+    "rest_framework.authtoken",
     # django-allauth
     "django.contrib.sites",
     "allauth",
