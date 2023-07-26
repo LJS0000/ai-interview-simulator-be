@@ -3,15 +3,16 @@ from django.views import View
 from dotenv import load_dotenv
 import openai
 import os
+from .models import Conversation
 
 load_dotenv()
 openai.api_key = os.getenv('OPENAI_API_KEY')
 
 
-class ChatbotView(View):
+class ChatView(View):
     def get(self, request, *args, **kwargs):
         conversations = request.session.get('conversations', [])
-        return render(request, 'chatbot/chat.html', {'conversations': conversations})
+        return render(request, 'chat.html', {'conversations': conversations})
 
     def post(self, request, *args, **kwargs):
         prompt = request.POST.get('prompt')
@@ -37,10 +38,13 @@ class ChatbotView(View):
             )
             response = completions.choices[0].text.strip()
 
-            conversation = {'prompt': prompt, 'response': response}
+            conversation = Conversation(prompt=prompt, response=response)
+            conversation.save()
 
             # 대화 기록에 새로운 응답 추가
-            session_conversations.append(conversation)
+            session_conversations.append({'prompt': prompt, 'response': response})
             request.session['conversations'] = session_conversations
+            # 세션 내용 변화를 감지해 변경 내용을 추가로 SQLite에 저장
+            request.session.modified = True
 
         return self.get(request, *args, **kwargs)
