@@ -23,6 +23,7 @@ ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
     "gpt",
+    "user",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
