@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+AUTH_USER_MODEL = 'user.User'
 
 # SECURITY WARNING: keep the secret key used in production secret!
 load_dotenv()
