@@ -1,57 +1,84 @@
 from django.contrib.auth import authenticate, login, logout
-from rest_framework import status
-from rest_framework.views import APIView
+from rest_framework import viewsets, status
+from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.authentication import SessionAuthentication, TokenAuthentication
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from .serializers import UserSerializer
+from .models import User
+from django.core.exceptions import ValidationError
+from django.contrib.auth.password_validation import validate_password
 
 
-class RegisterView(APIView):
-    def post(self, request):
-        serializer = UserSerializer(data=request.data)
-        if serializer.is_valid():
-            user = serializer.save()
-            login(request, user)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+class UserViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
+    # 각각의 메소드에 대해 권한을 지정
+    permission_classes_by_action = {
+        'create': [AllowAny],
+        'login': [AllowAny],
+        'logout': [IsAuthenticated],
+        'default': [IsAuthenticated],
+    }
 
+    # 행동에 따라 permission_classes를 할당
+    def get_permissions(self):
+        try:
+            return [
+                permission()
+                for permission in self.permission_classes_by_action[self.action]
+            ]
+        except KeyError:
+            return [
+                permission()
+                for permission in self.permission_classes_by_action['default']
+            ]
 
-class LoginView(APIView):
-    def post(self, request):
+    @action(detail=False, methods=['post'])
+    def login(self, request):
         email = request.data.get('email')
         password = request.data.get('password')
 
         if email is None or password is None:
             return Response(
-                {"error": "Please provide both email and password"},
+                {"error": "이메일과 비밀번호를 모두 입력해주세요."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
+        # 사용자를 검증
         user = authenticate(email=email, password=password)
 
         if user is not None:
             login(request, user)
             return Response(UserSerializer(user).data)
 
+        # 로그인 실패 시 HTTP 401 UNAUTHORIZED 상태 코드 반환
         return Response(
-            {"error": "Invalid login credentials"}, status=status.HTTP_400_BAD_REQUEST
+            {"error": "이메일과 비밀번호를 확인해주세요."},
+            status=status.HTTP_401_UNAUTHORIZED,
         )
 
-
-class LogoutView(APIView):
-    authentication_classes = [SessionAuthentication, TokenAuthentication]
-    permission_classes = [IsAuthenticated]
-
-    def post(self, request):
+    @action(detail=False, methods=['post'])
+    def logout(self, request):
         logout(request)
-        return Response({"message": "Logged out successfully"})
+        return Response({"message": "성공적으로 로그아웃되었습니다."})
 
+    def create(self, request, *args, **kwargs):
+        email = request.data.get('email')
+        password = request.data.get('password')
 
-class DeleteUserView(APIView):
-    authentication_classes = [SessionAuthentication, TokenAuthentication]
-    permission_classes = [IsAuthenticated]
+        if password is not None:
+            try:
+                validate_password(password)
+            except ValidationError as e:
+                return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
-    def delete(self, request):
-        request.user.delete()
-        return Response({"message": "User deleted successfully"})
+        # serializer가 유효하다면, 사용자를 생성
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()
+        headers = self.get_success_headers(serializer.data)
+        return Response(
+            serializer.data, status=status.HTTP_201_CREATED, headers=headers
+        )
