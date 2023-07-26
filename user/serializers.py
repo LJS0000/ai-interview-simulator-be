@@ -21,6 +21,7 @@ class UserSerializer(serializers.ModelSerializer):
         return user
 
 
+# AuthTokenSerializer username 기본 설정 변경
 class CustomAuthTokenSerializer(AuthTokenSerializer):
     username = None
     email = serializers.CharField()

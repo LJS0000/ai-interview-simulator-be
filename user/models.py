@@ -34,6 +34,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     objects = UserManager()
 
+    # username을 email로 설정
     USERNAME_FIELD = 'email'
     EMAIL_FIELD = 'email'
     REQUIRED_FIELDS = []
