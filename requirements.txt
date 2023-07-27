@@ -6,11 +6,11 @@ async-timeout==4.0.2
 attrs==23.1.0
 backports.zoneinfo==0.2.1
 billiard==3.6.4.0
-celery==5.1.2
+celery==5.2.7
 certifi==2023.7.22
 cffi==1.15.1
 charset-normalizer==3.2.0
-click==7.1.2
+click==8.1.6
 click-didyoumean==0.3.0
 click-plugins==1.1.1
 click-repl==0.3.0
