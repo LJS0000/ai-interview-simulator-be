@@ -4,7 +4,7 @@ amqp==5.1.1
 asgiref==3.7.2
 async-timeout==4.0.2
 attrs==23.1.0
-# backports.zoneinfo==0.2.1
+backports.zoneinfo==0.2.1
 billiard==3.6.4.0
 celery==5.2.7
 certifi==2023.7.22
@@ -16,9 +16,11 @@ click-plugins==1.1.1
 click-repl==0.3.0
 cryptography==41.0.2
 defusedxml==0.7.1
+dj-database-url==2.0.0
 Django==4.2.3
 django-allauth==0.54.0
 django-celery-results==2.5.1
+django-heroku==0.3.1
 djangorestframework==3.14.0
 frozenlist==1.4.0
 gunicorn==20.1.0
@@ -28,6 +30,7 @@ multidict==6.0.4
 oauthlib==3.2.2
 openai==0.27.8
 prompt-toolkit==3.0.39
+psycopg2==2.9.6
 pycparser==2.21
 PyJWT==2.8.0
 python-dateutil==2.8.2
@@ -45,4 +48,5 @@ tzdata==2023.3
 urllib3==2.0.4
 vine==5.0.0
 wcwidth==0.2.6
+whitenoise==6.5.0
 yarl==1.9.2
