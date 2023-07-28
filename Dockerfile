@@ -5,12 +5,8 @@ FROM python:3.8-slim-buster
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
-# 일반 유저로 실행
-RUN adduser --disabled-password --gecos '' myuser
-USER myuser
-
 # 작업 디렉토리 설정
-WORKDIR /home/myuser/code
+WORKDIR /code
 
 # 시스템 dependencies 설치
 RUN apt-get update \
@@ -23,12 +19,17 @@ RUN apt-get update \
   && rm -rf /var/lib/apt/lists/*
 
 # dependencies 설치
-COPY --chown=myuser:myuser requirements.txt .
+COPY requirements.txt .
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
+# 사용자 추가 및 권한 변경
+RUN adduser --disabled-password --gecos '' myuser
+RUN chown -R myuser:myuser /code
+USER myuser
+
 # 프로젝트 복사
-COPY --chown=myuser:myuser . .
+COPY . .
 
 # 8000포트 개방
 EXPOSE 8000
