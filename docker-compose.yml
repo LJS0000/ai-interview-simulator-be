@@ -8,6 +8,8 @@ services:
             - .:/code
         ports:
             - '8000:8000'
+        env_file:
+            - .env
         depends_on:
             - redis
 
@@ -16,6 +18,8 @@ services:
         command: celery -A app worker --loglevel=info
         volumes:
             - .:/code
+        env_file:
+            - .env
         depends_on:
             - redis
 
@@ -24,6 +28,8 @@ services:
         command: celery -A app beat --loglevel=info
         volumes:
             - .:/code
+        env_file:
+            - .env
         depends_on:
             - redis
 
