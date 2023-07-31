@@ -6,7 +6,11 @@ from celery.schedules import crontab
 # Django 프로젝트의 설정을 위한 환경 변수 설정
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'app.settings')
 
-app = Celery('app')
+app = Celery(
+    'app',
+    broker=f'redis://{os.getenv("REDIS_HOST")}:6379/0',
+    backend=f'redis://{os.getenv("REDIS_HOST")}:6379/0',
+)
 
 # Django 프로젝트의 설정을 Celery에 사용
 app.config_from_object('django.conf:settings', namespace='CELERY')
