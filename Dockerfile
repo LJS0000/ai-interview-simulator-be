@@ -16,6 +16,12 @@ RUN pip install -r requirements.txt
 # Copy project to container
 COPY . /code/
 
+# Create a non-root user and change ownership of the files
+RUN useradd -m uwsgiuser && chown -R uwsgiuser /code
+
+# Switch to the new user
+USER uwsgiuser
+
 ## 파라미터 정리
 # FROM: base image 설정. 컨테이너의 시작점.
 # RUN: 빌드 프로세스 중에 명령을 실행. 패키지를 설치하거나 필요한 설정 작업을 실행.
