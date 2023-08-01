@@ -49,7 +49,7 @@ amqp==5.1.1
 asgiref==3.7.2
 async-timeout==4.0.2
 attrs==23.1.0
-backports.zoneinfo==0.2.1
+backports.zoneinfo==0.2.1;python_version<"3.9"
 billiard==4.1.0
 black==23.3.0
 celery==5.3.1
