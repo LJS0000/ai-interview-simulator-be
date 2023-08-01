@@ -1,9 +1,20 @@
 version: '3.3'
 
 services:
+    db:
+        image: postgres
+        volumes:
+            - ./data/db:/var/lib/postgresql/data
+        env_file:
+            - .env
+        environment:
+            - POSTGRES_DB=${POSTGRES_DB}
+            - POSTGRES_USER=${POSTGRES_USER}
+            - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+
     web:
         build: .
-        command: uwsgi --ini uwsgi.ini
+        command: uwsgi --http :8000 --wsgi-file ./app/wsgi.py
         volumes:
             - .:/code
         ports:
