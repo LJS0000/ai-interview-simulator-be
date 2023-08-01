@@ -21,9 +21,7 @@ OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
-
-ALLOWED_HOSTS = ['*']
+DEBUG = True
 
 
 # Application definition
@@ -51,6 +49,12 @@ INSTALLED_APPS = [
     "allauth.socialaccount.providers.google",
 ]
 
+REST_FRAMEWORK = {
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework.renderers.JSONRenderer',
+    ]
+}
+
 SITE_ID = 1
 
 MIDDLEWARE = [
@@ -64,9 +68,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-CORS_ALLOWED_ORIGINS = [
-    'http://localhost:3000',
-]
+CORS_ALLOW_ALL_ORIGINS = True
 
 ROOT_URLCONF = "app.urls"
 
@@ -96,8 +98,8 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'drf_chatgpt',
         'USER': 'root',
-        'PASSWORD': 'root1234!',
-        'HOST': 'localhost',
+        'PASSWORD': 'root1111!',
+        'HOST': '192.168.183.6',
         'PORT': '5432',
     }
 }
@@ -133,12 +135,6 @@ USE_I18N = True
 
 USE_TZ = False
 
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/4.2/howto/static-files/
-
-STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field

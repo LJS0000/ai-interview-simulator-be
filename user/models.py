@@ -34,14 +34,14 @@ class User(AbstractBaseUser, PermissionsMixin):
     daily_chats = models.IntegerField(default=0)  # 일일 채팅 횟수 저장
 
     objects = UserManager()
-    
+
     # 채팅 횟수 증가 메서드
-    def increment_chats(self):  
+    def increment_chats(self):
         self.daily_chats += 1
         self.save()
 
     # 채팅 횟수 리셋 메서드
-    def reset_chats(self):  
+    def reset_chats(self):
         self.daily_chats = 0
         self.save()
 
