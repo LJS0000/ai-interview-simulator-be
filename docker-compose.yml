@@ -17,6 +17,7 @@ services:
         command: uwsgi --http :8000 --wsgi-file ./app/wsgi.py
         volumes:
             - .:/code
+            - shared_sockets:/sockets  
         ports:
             - '8000:8000'
         env_file:
@@ -27,7 +28,7 @@ services:
         environment:
             - REDIS_URL=redis://redis:6379/0
 
-    backend-worker-1:
+    backend-worker:
         build: .
         command: celery -A app worker --loglevel=info
         volumes:
@@ -39,18 +40,7 @@ services:
         environment:
             - REDIS_URL=redis://redis:6379/0
 
-    worker:
-        build: .
-        command: celery -A app worker --loglevel=info
-        volumes:
-            - .:/code
-        env_file:
-            - .env
-        depends_on:
-            - redis
-        environment:
-            - REDIS_URL=redis://redis:6379/0
-
+    
     beat:
         build: .
         command: celery -A app beat --loglevel=info
@@ -66,4 +56,17 @@ services:
     redis:
         image: redis:latest
         ports:
-            - 6379:6379
+            - 6380:6397
+
+    nginx:
+        image: nginx:latest
+        ports:
+            - '80:80'
+        volumes:
+            - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro  # 호스트의 nginx.conf 파일을 마운트
+            - shared_sockets:/sockets  
+        depends_on:
+            - web
+
+volumes:
+    shared_sockets:
