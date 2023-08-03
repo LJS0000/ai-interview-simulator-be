@@ -11,22 +11,22 @@ CELERY_RESULT_BACKEND = os.environ.get('REDIS_URL', 'redis://localhost:6379')
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 
+# Auth user model
 AUTH_USER_MODEL = 'user.User'
 
-# SECURITY WARNING: keep the secret key used in production secret!
+# Secret key
 load_dotenv()
 SECRET_KEY = os.getenv('SECRET_KEY')
-# OpenAI API Key
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 
-
-# SECURITY WARNING: don't run with debug turned on in production!
+# Debug
 DEBUG = True
 
+# Whitelist
 ALLOWED_HOSTS = ['3.39.187.24', 'localhost', '127.0.0.1']
+CORS_ALLOW_ALL_ORIGINS = True
 
 # Application definition
-
 INSTALLED_APPS = [
     "gpt",
     "user",
@@ -50,12 +50,14 @@ INSTALLED_APPS = [
     "allauth.socialaccount.providers.google",
 ]
 
+# DRF
 REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': [
         'rest_framework.renderers.JSONRenderer',
     ]
 }
 
+# django-allauth
 SITE_ID = 1
 
 MIDDLEWARE = [
@@ -68,8 +70,6 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
-
-CORS_ALLOW_ALL_ORIGINS = True
 
 ROOT_URLCONF = "app.urls"
 
@@ -91,9 +91,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "app.wsgi.application"
 
-
 # Database
-# https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
